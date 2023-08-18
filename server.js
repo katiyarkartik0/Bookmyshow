@@ -3,8 +3,9 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const Theatre = require("./models/theatre");
-const ShowTime = require("./models/showTime");
 const routes = express.Router();
+const bodyParser = require("body-parser");
+const { getShowsByTheatreAndNumberOfDays } = require("./helpers/showtime");
 
 dotenv.config();
 const app = express();
@@ -26,19 +27,28 @@ app.get("/theatres", async (req, res) => {
   }
 });
 
-// API to get dates for a specific theatre in the next 7 days
-app.get("/theatres/:theatreId/dates", async (req, res) => {
+// API to get dates for a specific theatre in the next variable days
+app.get("/theatres/:theatreId/dates/:numberOfDays", async (req, res) => {
   try {
-    const { theatreId } = req.params;
-    // Assuming show_date is stored as ISO date strings in the database
-    const next7Days = new Date(
-      Date.now() + 7 * 24 * 60 * 60 * 1000
-    ).toISOString();
-    const dates = await ShowTime.distinct("show_date", {
-      theatre_id: theatreId,
-      show_date: { $gte: new Date(), $lte: next7Days },
+    const { theatreId, numberOfDays } = req.params;
+    const lastDate = new Date(
+      Date.now() + parseInt(numberOfDays) * 24 * 60 * 60 * 1000
+    );
+
+    const shows = await getShowsByTheatreAndNumberOfDays({
+      theatreId,
+      startingDate: new Date(),
+      lastDate,
     });
-    res.json(dates);
+
+    const filteredDates = shows.map((show) =>
+      show.dates.filter((dateObj) => {
+        const date = new Date(dateObj.date);
+        return date >= new Date() && date < lastDate;
+      })
+    );
+
+    res.status(200).json({ filteredDates });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -48,15 +58,18 @@ app.get("/theatres/:theatreId/dates", async (req, res) => {
 app.get("/theatres/:theatreId/dates/:date/movies", async (req, res) => {
   try {
     const { theatreId, date } = req.params;
-    const startDate = new Date(date);
-    const endDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
-    const movies = await ShowTime.find({
-      theatre_id: theatreId,
-      show_date: { $gte: startDate, $lt: endDate },
-    }).populate("movie_id", "movie_name");
-    res.json(movies);
+    const numberOfDays = 1;
+    const lastDate = new Date(date)
+    lastDate.setDate(lastDate.getDate() + numberOfDays);
+
+    const shows = await getShowsByTheatreAndNumberOfDays({
+      theatreId,
+      startingDate: new Date(date),
+      lastDate,
+    });
+    res.status(200).json({ shows });
   } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error:err });
   }
 });
 
@@ -68,7 +81,7 @@ mongoose
   .then(() => {
     const server = app.listen(
       process.env.PORT,
-      console.log("listening to post 5000")
+      console.log("listening to port " + process.env.PORT)
     );
   })
   .catch((error) => console.log(error));
