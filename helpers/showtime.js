@@ -1,12 +1,11 @@
 const Movie = require("../models/movie");
 const ShowTime = require("../models/showTime");
 
-const getShowsByTheatreAndNumberOfDays = async ({
+const getShowsByTheatreAndPeriod = async ({
   theatreId,
   startingDate,
   lastDate,
 }) => {
-  try {
     const scheduledShows = await ShowTime.find({
       theatreId,
     })
@@ -25,9 +24,30 @@ const getShowsByTheatreAndNumberOfDays = async ({
     });
     console.log(filteredShows);
     return filteredShows;
-  } catch (err) {
-    console.log(err);
-  }
 };
 
-module.exports = { getShowsByTheatreAndNumberOfDays };
+const getCalendarByTheatreAndPeriod = async ({
+  theatreId,
+  startingDate,
+  lastDate,
+}) => {
+    const scheduledShows = await ShowTime.find({
+      theatreId,
+    });
+
+    const filteredDates = [];
+
+    for (let i = 0; i < scheduledShows.length; i++) {
+      const dates = scheduledShows[i].dates;
+      for (let j = 0; j < dates.length; j++) {
+        const date = new Date(dates[j].date);
+        if (date >= startingDate && date < lastDate) {
+          filteredDates.push(dates[j]);
+        }
+      }
+    }
+
+    return filteredDates;
+};
+
+module.exports = { getShowsByTheatreAndPeriod,getCalendarByTheatreAndPeriod };

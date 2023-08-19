@@ -29,7 +29,7 @@ const movies = [
     language: "English",
     genre: "Science Fiction",
     comments: ["Mind-bending movie!", "Great visual effects."],
-    ratings: 8.8,
+    ratings: [8.8],
   },
   {
     title: "The Shawshank Redemption",
@@ -41,7 +41,7 @@ const movies = [
     language: "English",
     genre: "Drama",
     comments: ["Classic movie!", "Emotionally powerful."],
-    ratings: 9.3,
+    ratings: [9.3],
   },
   {
     title: "The Dark Knight",
@@ -53,7 +53,7 @@ const movies = [
     language: "English",
     genre: "Action",
     comments: ["Heath Ledger's Joker is iconic!", "Intense action sequences."],
-    ratings: 9.0,
+    ratings: [9.0],
   },
   {
     title: "Pulp Fiction",
@@ -65,7 +65,7 @@ const movies = [
     language: "English",
     genre: "Crime",
     comments: ["Quirky and engaging.", "Memorable dialogues."],
-    ratings: 8.9,
+    ratings: [8.9],
   },
   {
     title: "Avatar",
@@ -77,7 +77,7 @@ const movies = [
     language: "English",
     genre: "Adventure",
     comments: ["Visually stunning!", "Immersive world-building."],
-    ratings: 7.8,
+    ratings: [7.8],
   },
 ];
 
@@ -220,8 +220,10 @@ const seedData = async () => {
       await Theatre.create(theaters[i]);
       await Movie.create(movies[i]);
 
-      const {_id:theatreId} = await Theatre.findOne({ name: theaters[i].name });
-      const {_id:movieId} = await Movie.findOne({ title: movies[i].title });
+      const { _id: theatreId } = await Theatre.findOne({
+        name: theaters[i].name,
+      });
+      const { _id: movieId } = await Movie.findOne({ title: movies[i].title });
 
       await ShowTime.create({
         theatreId,

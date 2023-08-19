@@ -11,7 +11,7 @@ const movieSchema = mongoose.Schema(
     language: { type: String },
     genre: { type: String },
     comments: [{ type: String }],
-    ratings: { type: Number },
+    ratings: [{ type: Number }],
   },
   { timestamps: true }
 );
