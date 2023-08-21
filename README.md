@@ -82,4 +82,4 @@ The project is organized into multiple modules to keep the codebase clean and ma
 ## Acknowledgments
 
 - This project was created as a learning exercise for building RESTful APIs with Express.js and MongoDB.
-- Inspiration and guidance were drawn from various online tutorials and documentation.
+- Inspiration and guidance were drawn from various online tutorials and documentation and Airtribe.
