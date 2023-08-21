@@ -16,8 +16,7 @@ To run this application locally, follow the steps below:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/express-movie-theatre-app.git
-   cd express-movie-theatre-app
+   https://github.com/<your-username>/Bookmyshow.git
    ```
 
 2. Install dependencies:
